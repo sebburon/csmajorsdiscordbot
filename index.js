@@ -6,7 +6,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once("ready", () => {
   console.log("Bot is ready!");
   fetchAndPostMatchResults();
-  // Fetch and post results every 2 hours
+  // Fetch and post results every 1 min
   setInterval(fetchAndPostMatchResults, 60000);
 });
 let matchesArr = [];
@@ -16,7 +16,6 @@ async function fetchAndPostMatchResults() {
     const response = await axios.get(
       "https://api.bo3.gg/api/v1/matches?filter[matches.tournament_id][eq]=2066&filter[matches.discipline_id][eq]=1&with=teams,tournament,games,tournament_deep&page[limit]=100"
     );
-    //const results = response.data; // Assuming this returns the format you need
     const channel = await client.channels.fetch(resultsChannelId);
     if (channel) {
       console.log(`event has ${response.data.results.length} matches`);
@@ -48,8 +47,6 @@ async function fetchAndPostMatchResults() {
               const index = matchesArr.findIndex((match) => match.id === matchId);
               matchesArr[index].status = matchStatus;
             }
-          } else {
-            //console.log(`match ${matchId} status not updated`);
           }
         } else {
           matchesArr.push({
@@ -85,8 +82,6 @@ async function fetchAndPostMatchResults() {
                 const index = gamesArr.findIndex((game) => game.id === gameId);
                 gamesArr[index].status = gameStatus;
               }
-            } else {
-              //console.log(`game ${gameId} status not updated`);
             }
           } else {
             gamesArr.push({
@@ -96,13 +91,7 @@ async function fetchAndPostMatchResults() {
             console.log(`game ${gameId} added`);
           }
         }
-
-        //console.log(`loop ${i} done`);
       }
-      //console.log(matches);
-      // Customize this message format according to the structure of your results
-      //const message = `Latest PGL Majors CS2 Match Result: Furia vs. KIO - Bo3 Winner: Furia`;
-      //channel.send(message);
     }
   } catch (error) {
     console.error("Error fetching or posting match results:", error);
